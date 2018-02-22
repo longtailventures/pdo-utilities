@@ -1,0 +1,20 @@
+{
+    "name": "longtailventures/pdo-utilities",
+    "description": "",
+    "type": "library",
+    "homepage": "http://longtailpartners.com/",
+    "authors" : [
+        {
+            "name": "Melvyn Navasca",
+            "email": "mnavasca@lotlinx.com",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": { 
+            "LongTailVentures\\": "src"
+            
+        }
+    },
+    "minimum-stability" : "dev"
+}
