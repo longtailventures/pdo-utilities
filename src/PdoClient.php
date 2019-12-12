@@ -24,14 +24,18 @@ class PdoClient
 	 * - host
 	 * - username
 	 * - password
+     *
+     * @param int $errorMode
+     * Should be a PDO constant
+     * Optional, default is PDO::ERRMODE_SILENT
 	 *
-     * @throws Execption
+     * @throws Exception
      * If $name is empty
 	 *
-	 * @return boolean $isSetup
+	 * @return bool $isSetup
 	 * True if setup, false otherwise
 	 */
-	public static function setup($name, array $connectionParams, $errorMode = PDO::ERRMODE_SILENT)
+	public static function setup($name, array $connectionParams, $errorMode = PDO::ERRMODE_SILENT) : bool
 	{
 		if (empty($name))
 			throw new Exception("A name must be specified");
@@ -61,13 +65,13 @@ class PdoClient
 	 * - password
 	 * - username
 	 *
-     * @throws Execption
+     * @throws Exception
      * If $connectionParams has required fields missing
 	 *
 	 * @return boolean $isSetup
 	 * True if setup, false otherwise
 	 */
-	public static function addConnectionParams($name, array $connectionParams)
+	public static function addConnectionParams($name, array $connectionParams) : bool
 	{
 		$connectionId = self::_generateConnectionId($name);
 
@@ -97,12 +101,12 @@ class PdoClient
      * @param string $name
      * The name of the connection to be retrieved
      *
-     * @throws Execption
+     * @throws Exception
      * If $name does not exist in self::$_connections -or- in self::$_connectionParams
      *
      * @return PDO connection
      */
-	public static function getConnection($name)
+	public static function getConnection($name) : ?PDO
 	{
 		$connectionId = self::_generateConnectionId($name);
 
@@ -130,6 +134,7 @@ class PdoClient
 			$connectionException = null;
 			$isConnectionFound = false;
 
+			$connection = null;
 			for ($i = 0; $i < count(self::$_connectionParams[$connectionId]) && !$isConnectionFound; $i++)
 			{
 				$connectionParams = self::$_connectionParams[$connectionId][$i];
@@ -165,10 +170,10 @@ class PdoClient
      * @param string $name
      * The name of the connection to be retrieved
 	 *
-	 * @return boolean $isConnectionEstablished
+	 * @return bool $isConnectionEstablished
 	 * True if connection is established, false otherwise
 	 */
-	public static function isConnectionEstablished($name)
+	public static function isConnectionEstablished($name) : bool
     {
     	$connectionId = self::_generateConnectionId($name);
 
@@ -188,13 +193,12 @@ class PdoClient
      * @param int $secondsBehindMasterThreshold
      * How many seconds behind master is the replica connection is considered 'ready'. Default is 0
      *
-     * @return boolean $isReady
+     * @return bool $isReady
      */
     public static function isReplicaConnectionReady($replicaConnection,
     						    $maxNumberOfSecondsToCheck = 1200,
-    						    $secondsBehindMasterThreshold = 0)
+    						    $secondsBehindMasterThreshold = 0) : bool
     {
-        $isReady = true;
         $numberOfSeconds = 0;
 
         do
@@ -225,7 +229,7 @@ class PdoClient
      * @param string $connectionId
      * The id of the connection to be retrieved
      */
-    public static function clearConnection($connectionId)
+    public static function clearConnection($connectionId) : void
     {
 		self::$_connections[$connectionId] = null;
 		if (isset(self::$_connectionParams[$connectionId]))
