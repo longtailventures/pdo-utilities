@@ -8,7 +8,9 @@ use PDOException;
 
 class PdoClient
 {
+    /** @var PDO[] $_connections */
 	protected static $_connections;
+
 	protected static $_connectionParams;
 	protected static $_errorMode;
 
@@ -101,20 +103,18 @@ class PdoClient
      * @param string $name
      * The name of the connection to be retrieved
      *
-     * @throws Exception
-     * If $name does not exist in self::$_connections -or- in self::$_connectionParams
-     *
      * @return PDO connection
+     * Null is returned if no matching connection can be round for $name
      */
 	public static function getConnection($name) : ?PDO
 	{
 		$connectionId = self::_generateConnectionId($name);
 
 		if (!array_key_exists($connectionId, self::$_connections))
-			throw new Exception("$name not found in connections pool. Use setup()");
+		    return null;
 
 		if (!array_key_exists($connectionId, self::$_connectionParams))
-			throw new Exception("$name not found in connection params pool. Use setup()");
+            return null;
 
 		if (self::$_connections[$connectionId] !== null)
 		{
@@ -150,12 +150,11 @@ class PdoClient
 				}
 				catch (PDOException $ex)
 				{
-					$connectionException = $ex;
 				}
 			}
 
 			if (!$isConnectionFound)
-				throw new Exception($connectionException->getMessage());
+                return null;
 
 			self::$_connections[$connectionId] = $connection;
 		}
